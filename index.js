@@ -38,10 +38,20 @@ async function run() {
     // Only 3 service
     app.get("/", async (req, res) => {
       const query = {};
-      const cursor = serviceCollection.find(query);
-      const homeService = await cursor.limit(3).toArray();
+      const cursor = serviceCollection
+        .find(query)
+        .sort({ $natural: -1 })
+        .limit(3);
+      const homeService = await cursor.toArray();
       console.log(homeService);
       res.send(homeService);
+    });
+
+    // add new service
+    app.post("/services", async (req, res) => {
+      const serve = req.body;
+      const result = await serviceCollection.insertOne(serve);
+      res.send(result);
     });
 
     // load individual services
@@ -67,6 +77,18 @@ async function run() {
       const reviews = await cursor.toArray();
       res.send(reviews);
       // console.log(reviews);
+    });
+
+    // Load individual
+    app.get("/reviews", async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const email = req.query.email;
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const cursor = reviewCollection.find(query);
+        const reviews = await cursor.toArray();
+        res.send(reviews);
+      }
     });
 
     // update
