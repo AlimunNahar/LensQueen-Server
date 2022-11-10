@@ -52,6 +52,36 @@ async function run() {
       // console.log(service);
       res.send(service);
     });
+
+    // post reviews
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    });
+
+    // get reviews
+    app.get("/reviews", async (req, res) => {
+      const query = {};
+      const cursor = reviewCollection.find(query);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+      // console.log(reviews);
+    });
+
+    // update
+    app.patch("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.body.status;
+      const query = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          status: status,
+        },
+      };
+      const result = await reviewCollection.updateOne(query, updatedDoc);
+      res.send(result);
+    });
   } finally {
   }
 }
