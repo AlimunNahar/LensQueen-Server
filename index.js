@@ -79,18 +79,6 @@ async function run() {
       // console.log(reviews);
     });
 
-    // Load individual
-    app.get("/reviews", async (req, res) => {
-      const decodedEmail = req.decoded.email;
-      const email = req.query.email;
-      if (email === decodedEmail) {
-        const query = { email: email };
-        const cursor = reviewCollection.find(query);
-        const reviews = await cursor.toArray();
-        res.send(reviews);
-      }
-    });
-
     // update
     app.patch("/reviews/:id", async (req, res) => {
       const id = req.params.id;
@@ -102,6 +90,14 @@ async function run() {
         },
       };
       const result = await reviewCollection.updateOne(query, updatedDoc);
+      res.send(result);
+    });
+
+    // Delete Review
+    app.delete("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await reviewCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
