@@ -35,6 +35,15 @@ async function run() {
       res.send(services);
     });
 
+    // Only 3 service
+    app.get("/", async (req, res) => {
+      const query = {};
+      const cursor = serviceCollection.find(query);
+      const homeService = await cursor.limit(3).toArray();
+      console.log(homeService);
+      res.send(homeService);
+    });
+
     // load individual services
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
